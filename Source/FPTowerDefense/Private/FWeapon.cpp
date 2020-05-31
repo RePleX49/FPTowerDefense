@@ -17,8 +17,10 @@ AFWeapon::AFWeapon()
 	FireRate = 450.0f;
 	MaxMagCount = 30;
 	bIsAutomatic = true;
+	bIsReloading = false;
 
 	MuzzleSocketName = "MuzzleFlashSocket";
+	ShellEjectSocketName = "ShellEjectionSocket";
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +39,7 @@ bool AFWeapon::StartFire()
 	// Otherwise no delay on the next shot
 	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 
-	if (CurrentMagCount > 0 && FirstDelay == 0.0f)
+	if (CurrentMagCount > 0 && !bIsReloading && FirstDelay == 0.0f)
 	{
 		if (bIsAutomatic)
 		{
@@ -48,9 +50,18 @@ bool AFWeapon::StartFire()
 		{
 			GetWorldTimerManager().SetTimer(TimerHandle_Fire, this, &AFWeapon::Fire, TimeBetweenShots, false, FirstDelay);
 		}
-		
 
 		return true;
+	}
+	else if (CurrentMagCount == 0 && !bIsReloading)
+	{
+		StartReload();
+
+		AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
+		if (OwningCharacter)
+		{
+			OwningCharacter->PlayReloadAnim();
+		}
 	}
 	
 	// when we can't fire, return false so that Owner doesn't run anims
@@ -64,11 +75,21 @@ void AFWeapon::EndFire()
 
 bool AFWeapon::StartReload()
 {
-	if (CurrentMagCount < MaxMagCount)
+	if (CurrentMagCount < MaxMagCount && !bIsReloading)
 	{
-		// TODO play anim here and have actual reload on timer delay
+		EndFire();
+
+		//TODO make combine both endfires into a single function for ease of use
+		// get owning character and call EndFire to stop animations
+		AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
+		if (OwningCharacter)
+		{
+			OwningCharacter->EndFire();
+		}
+
+		// actual reload function is called in Blueprint by Montage Notify
 		PlayReloadAnim();
-		Reload();
+		bIsReloading = true;
 
 		return true;
 	}
@@ -102,15 +123,21 @@ void AFWeapon::Reload()
 {
 	int ReloadCount = MaxMagCount - CurrentMagCount;
 	CurrentMagCount += ReloadCount;
+	bIsReloading = false;
 }
 
 void AFWeapon::PlayWeaponFX()
 {
-	FTransform MuzzleTransform = MeshComp->GetSocketTransform(MuzzleSocketName);
-
 	if (MuzzleFlash)
 	{
+		FTransform MuzzleTransform = MeshComp->GetSocketTransform(MuzzleSocketName);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, MuzzleTransform);
+	}
+
+	if (ShellEject)
+	{
+		FTransform EjectTransform = MeshComp->GetSocketTransform(ShellEjectSocketName);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShellEject, EjectTransform);
 	}
 }
 

@@ -30,11 +30,14 @@ protected:
 
 	virtual void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Reload();
 
 	// function call for playing animations in blueprint
 	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
 	void PlayReloadAnim();
+
+	bool bIsReloading;
 
 	virtual void PlayWeaponFX();
 
@@ -64,6 +67,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	FName MuzzleSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	FName ShellEjectSocketName;
 
 public:	
 
