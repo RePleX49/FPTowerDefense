@@ -21,7 +21,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void Attack();
+	virtual void Attack();
+
+	virtual void FindTarget();
+
+	FTimerHandle TimerHandle_FindTarget;
+	FTimerHandle TimerHandle_Attack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp;
@@ -31,6 +36,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
 	float RangeRadius;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	float AttackSpeed;
+
+	AActor* CurrentTarget;
+
+	TSubclassOf<UDamageType> DamageType;
 
 public:	
 	// Called every frame
