@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	int CurrentMagCount;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (ClampMin = 0.0f))
 	int MaxMagCount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
@@ -62,6 +62,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	UParticleSystem* ShellEject;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
+	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
+	UAnimMontage* FireMontage;
 
 	FTimerHandle TimerHandle_Fire;
 

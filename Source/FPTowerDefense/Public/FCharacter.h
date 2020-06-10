@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DrawDebugHelpers.h"
 #include "FCharacter.generated.h"
 
 class UCameraComponent;
@@ -39,7 +40,13 @@ protected:
 
 	virtual void UseOffensive();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
+	void UseOffensiveBP();
+
 	virtual void UseSupport();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
+	void UseSupportBP();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;

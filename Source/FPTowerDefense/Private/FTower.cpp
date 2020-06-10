@@ -10,7 +10,7 @@
 AFTower::AFTower()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Comp"));
 	RootComponent = MeshComp;
@@ -58,7 +58,7 @@ void AFTower::FindTarget()
 	{
 		if (actor != this)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
 			// TODO sort target by health, or distance
 
 		}

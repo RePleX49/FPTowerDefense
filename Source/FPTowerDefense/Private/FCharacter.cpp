@@ -131,11 +131,13 @@ void AFCharacter::Reload()
 void AFCharacter::UseOffensive()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Used Offensive Ability"));
+	UseOffensiveBP();
 }
 
 void AFCharacter::UseSupport()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Used Support Ability"));
+	UseSupportBP();
 }
 
 // Called every frame
