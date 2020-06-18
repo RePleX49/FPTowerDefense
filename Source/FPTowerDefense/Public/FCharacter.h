@@ -34,7 +34,7 @@ protected:
 
 	void StopSprint();
 	
-	void StartFire();
+	virtual void StartFire();
 
 	void Reload();
 

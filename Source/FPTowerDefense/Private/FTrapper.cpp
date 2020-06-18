@@ -9,6 +9,16 @@
 AFTrapper::AFTrapper()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	bInPlacementMode = false;
+}
+
+void AFTrapper::StartFire()
+{
+	if (!bInPlacementMode)
+	{
+		Super::StartFire();
+	}
 }
 
 void AFTrapper::GetPlaceSpot()
@@ -45,14 +55,19 @@ void AFTrapper::GetPlaceSpot()
 
 void AFTrapper::PlaceTrap()
 {
-	GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
+	if (bInPlacementMode)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	GetWorld()->SpawnActor<AActor>(TrapClass, TrapPlacement, GetActorRotation(), SpawnParams);
+		GetWorld()->SpawnActor<AActor>(TrapClass, TrapPlacement, GetActorRotation(), SpawnParams);
 
-	InputComponent->BindAction("Fire", IE_Pressed, this, &AFTrapper::StartFire);
+		UE_LOG(LogTemp, Warning, TEXT("Placed Trap"));
+
+		bInPlacementMode = false;
+	}
 }
 
 void AFTrapper::UseOffensive()
@@ -60,7 +75,7 @@ void AFTrapper::UseOffensive()
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PlaceTrap))
 	{
 		//TODO fix rebinding to PlaceTrap function when using ability
-		InputComponent->BindAction("Fire", IE_Pressed, this, &AFTrapper::PlaceTrap);
+		bInPlacementMode = true;
 		GetWorldTimerManager().SetTimer(TimerHandle_PlaceTrap, this, &AFTrapper::GetPlaceSpot, 0.017f, true, 0.0f);
 	}
 	else
@@ -116,6 +131,14 @@ void AFTrapper::Tick(float DeltaTime)
 			PreviousActor = nullptr;
 		}
 	}
+}
+
+void AFTrapper::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	InputComponent->BindAction("Fire", IE_Pressed, this, &AFTrapper::PlaceTrap);
+
 }
 
 void AFTrapper::RemoveOutline(AActor* OutlinedActor)

@@ -20,6 +20,8 @@ public:
 
 protected:
 
+	virtual void StartFire();
+
 	void GetPlaceSpot();
 
 	void PlaceTrap();
@@ -42,9 +44,14 @@ protected:
 	// used in tick
 	AActor* PreviousActor;
 
+	bool bInPlacementMode;
+
 protected:
 
 	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void RemoveOutline(AActor* OutlinedActor);
 };
