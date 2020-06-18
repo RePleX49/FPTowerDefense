@@ -14,6 +14,10 @@ class FPTOWERDEFENSE_API AFTrapper : public AFCharacter
 {
 	GENERATED_BODY()
 	
+public:
+
+	AFTrapper();
+
 protected:
 
 	void GetPlaceSpot();
@@ -35,5 +39,12 @@ protected:
 
 	FVector TrapPlacement;
 
+	// used in tick
+	AActor* PreviousActor;
 
+protected:
+
+	virtual void Tick(float DeltaTime) override;
+
+	void RemoveOutline(AActor* OutlinedActor);
 };
