@@ -30,6 +30,12 @@ void AFWeapon::BeginPlay()
 	
 	TimeBetweenShots = 60 / FireRate;
 	CurrentMagCount = MaxMagCount;
+
+	USkeletalMeshComponent* UseMesh = MeshComp;
+	if (MeshComp && ArmReloadMontage && UseMesh->AnimScriptInstance)
+	{
+		UseMesh->AnimScriptInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AFWeapon::OnReloadNotify);
+	}
 }
 
 
@@ -88,7 +94,13 @@ bool AFWeapon::StartReload()
 		}
 
 		// actual reload function is called in Blueprint by Montage Notify
-		PlayReloadAnim();
+		//PlayReloadAnim();
+		USkeletalMeshComponent* UseMesh = MeshComp;
+		if (MeshComp && ArmReloadMontage && UseMesh->AnimScriptInstance)
+		{
+			UseMesh->AnimScriptInstance->Montage_Play(GunReloadMontage, 1.0f);
+		}
+
 		bIsReloading = true;
 
 		return true;
@@ -102,9 +114,9 @@ void AFWeapon::Fire()
 {
 	if (CurrentMagCount > 0)
 	{
-		LastFireTime = GetWorld()->TimeSeconds;
-		CurrentMagCount--;
 		PlayWeaponFX();
+		HandleFiring();
+		// Have separate function to handle fire for different fire modes such as burst
 	}
 	else
 	{
@@ -119,11 +131,27 @@ void AFWeapon::Fire()
 	}
 }
 
+void AFWeapon::HandleFiring()
+{
+	LastFireTime = GetWorld()->TimeSeconds;
+	CurrentMagCount--;
+
+	// Calls separate function to handle actual Fire trace
+}
+
 void AFWeapon::Reload()
 {
 	int ReloadCount = MaxMagCount - CurrentMagCount;
 	CurrentMagCount += ReloadCount;
 	bIsReloading = false;
+}
+
+void AFWeapon::OnReloadNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if (NotifyName == "ReloadFinished")
+	{
+		Reload();
+	}
 }
 
 void AFWeapon::PlayWeaponFX()

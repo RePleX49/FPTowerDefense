@@ -5,12 +5,13 @@
 #include "Components/SphereComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "FEnemy.h"
 
 // Sets default values
 AFTower::AFTower()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh Comp"));
 	RootComponent = MeshComp;
@@ -20,6 +21,7 @@ AFTower::AFTower()
 	SphereComp->SetupAttachment(MeshComp);
 
 	AttackSpeed = 0.2f;
+	
 }
 
 // Called when the game starts or when spawned
@@ -27,7 +29,7 @@ void AFTower::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetWorldTimerManager().SetTimer(TimerHandle_FindTarget, this, &AFTower::FindTarget, 0.0167f, true, 0.0f);
+	CurrentTarget = nullptr;
 }
 
 void AFTower::Attack()
@@ -37,15 +39,13 @@ void AFTower::Attack()
 		FVector TraceStart = GetActorLocation();
 		FVector TraceEnd = CurrentTarget->GetTargetLocation();
 
-		if (GetDistanceTo(CurrentTarget) > RangeRadius)
-		{
-			GetWorldTimerManager().ClearTimer(TimerHandle_Attack);
-			GetWorldTimerManager().SetTimer(TimerHandle_FindTarget, this, &AFTower::FindTarget, 0.0167f, true, 0.0f);
-		}
-
 		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
 		UGameplayStatics::ApplyDamage(CurrentTarget, 5.0f, nullptr, this, DamageType);
+	}
+	else
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Attack);
 	}
 }
 
@@ -56,20 +56,21 @@ void AFTower::FindTarget()
 
 	for (AActor* actor : OverlappedActors)
 	{
-		if (actor != this)
+		if (actor != this && Cast<AFEnemy>(actor))
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
 			// TODO sort target by health, or distance
-
+			
+			if (CurrentTarget == nullptr)
+			{
+				CurrentTarget = actor;
+				break;
+			}
 		}
 	}
 
-	// greater than one to ignore self
-	if (OverlappedActors.Num() > 1)
+	if (CurrentTarget)
 	{
-		// temporary get target
-		CurrentTarget = OverlappedActors[1];
-		GetWorldTimerManager().ClearTimer(TimerHandle_FindTarget);
 		GetWorldTimerManager().SetTimer(TimerHandle_Attack, this, &AFTower::Attack, AttackSpeed, true, 0.0f);
 	}
 }
@@ -79,5 +80,15 @@ void AFTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentTarget == nullptr)
+	{
+		FindTarget();
+	}
+
+	if (GetDistanceTo(CurrentTarget) > RangeRadius)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Attack);
+		CurrentTarget = nullptr;
+	}
 }
 

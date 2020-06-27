@@ -34,9 +34,11 @@ void AFTrapper::GetPlaceSpot()
 
 		/*
 		DrawDebugLine(GetWorld(), TraceStart, HitA.Location, FColor::Red, false, 0.1f, 0, 0.25f);
-		DrawDebugSphere(GetWorld(), HitA.Location, 25.0f, 12, FColor::Red, false, 0.1f, 0, 0.35f);
+		
 		*/
 		
+		DrawDebugSphere(GetWorld(), HitA.Location, 25.0f, 12, FColor::Red, false, 0.1f, 0, 0.35f);
+
 		TrapPlacement = HitA.Location;
 	}
 	else if (GetWorld()->LineTraceSingleByChannel(HitB, TraceEnd, TraceEnd + (FVector::UpVector * -VerticalReach), ECC_Visibility, QueryParams))
@@ -46,9 +48,10 @@ void AFTrapper::GetPlaceSpot()
 		/*
 		DrawDebugLine(GetWorld(), TraceStart, HitA.Location, FColor::Red, false, 0.1f, 0, 0.25f);
 		DrawDebugLine(GetWorld(), TraceEnd, HitB.Location, FColor::Red, false, 0.1f, 0, 0.25f);
-		DrawDebugSphere(GetWorld(), HitB.Location, 25.0f, 12, FColor::Red, false, 0.1f, 0, 0.35f);
-		*/
 		
+		*/
+		DrawDebugSphere(GetWorld(), HitB.Location, 25.0f, 12, FColor::Red, false, 0.1f, 0, 0.35f);
+
 		TrapPlacement = HitB.Location;
 	}
 }
@@ -59,12 +62,19 @@ void AFTrapper::PlaceTrap()
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		if (TrapClass)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		GetWorld()->SpawnActor<AActor>(TrapClass, TrapPlacement, GetActorRotation(), SpawnParams);
+			GetWorld()->SpawnActor<AActor>(TrapClass, TrapPlacement, GetActorRotation(), SpawnParams);
 
-		UE_LOG(LogTemp, Warning, TEXT("Placed Trap"));
+			UE_LOG(LogTemp, Warning, TEXT("Placed Trap"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Could not find trap class"));
+		}
 
 		bInPlacementMode = false;
 	}
@@ -82,6 +92,25 @@ void AFTrapper::UseOffensive()
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
 	}
+}
+
+void AFTrapper::UseSupport()
+{
+	// throw tether projectile
+	if (TetherClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		FVector SpawnLoc = CameraComp->GetComponentLocation() + FVector(-125.0f, 0.0f, 0.0f);
+
+		GetWorld()->SpawnActor<AActor>(TetherClass, SpawnLoc, CameraComp->GetComponentRotation(), SpawnParams);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not find tether class"));
+	}
+	
 }
 
 void AFTrapper::Tick(float DeltaTime)

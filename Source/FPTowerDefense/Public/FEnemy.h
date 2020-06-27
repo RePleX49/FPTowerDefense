@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "FEnemy.generated.h"
 
+class UFHealthComponent;
+
 UCLASS()
 class FPTOWERDEFENSE_API AFEnemy : public ACharacter
 {
@@ -18,6 +20,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFHealthComponent* HealthComp;
 
 public:	
 	// Called every frame

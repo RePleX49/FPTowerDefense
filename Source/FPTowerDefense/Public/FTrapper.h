@@ -28,6 +28,8 @@ protected:
 
 	virtual void UseOffensive() override;
 
+	virtual void UseSupport() override;
+
 	FTimerHandle TimerHandle_PlaceTrap;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
@@ -38,6 +40,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<AActor> TrapClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<AActor> TetherClass;
 
 	FVector TrapPlacement;
 

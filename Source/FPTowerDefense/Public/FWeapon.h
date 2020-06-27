@@ -30,12 +30,17 @@ protected:
 
 	virtual void Fire();
 
+	// function that actually calls Traces
+	virtual void HandleFiring();
+
+	virtual void FireShot() PURE_VIRTUAL(AFWeapon::FireShot,);
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Reload();
 
 	// function call for playing animations in blueprint
-	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
-	void PlayReloadAnim();
+	UFUNCTION()
+	void OnReloadNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
 	bool bIsReloading;
 
@@ -43,6 +48,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	bool bIsAutomatic;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float BaseDamage;
 
 	float TimeBetweenShots;
 
@@ -64,10 +72,19 @@ protected:
 	UParticleSystem* ShellEject;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
-	UAnimMontage* ReloadMontage;
+	UAnimMontage* ArmReloadMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
+	UAnimMontage* GunReloadMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
 	UAnimMontage* FireMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
+	UAnimBlueprint* ArmsAnimBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UDamageType> DamageType;
 
 	FTimerHandle TimerHandle_Fire;
 
