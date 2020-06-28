@@ -15,8 +15,8 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 
 void AFBurstRifle::HandleFiring()
 {
-	Super::HandleFiring();
-	FireShot();
+	LastFireTime = GetWorld()->TimeSeconds;
+	BurstFire();
 }
 
 void AFBurstRifle::FireShot()
@@ -51,19 +51,28 @@ void AFBurstRifle::FireShot()
 			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(),
 				MyOwner, DamageType);
 		}
+
+		LastBurstTime = GetWorld()->TimeSeconds;
+		CurrentBurst++;
+
+		PlayWeaponFX();
+
+		CurrentMagCount--;
+
+		BurstFire();
 	}
 }
 
 void AFBurstRifle::BurstFire()
 {
-	/*
 	if (CurrentBurst < BurstCount)
 	{
-
+		float FirstBurstDelay = FMath::Max(TimeBetweenBurst + LastBurstTime - GetWorld()->TimeSeconds, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_Burst, this, &AFBurstRifle::FireShot, TimeBetweenBurst, false, FirstBurstDelay);	
 	}
 	else
 	{
-		GetWorldTimerManager().ClearTimer();
+		GetWorldTimerManager().ClearTimer(TimerHandle_Burst);
+		CurrentBurst = 0;
 	}
-	*/
 }

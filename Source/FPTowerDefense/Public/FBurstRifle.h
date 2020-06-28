@@ -29,4 +29,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float WeaponRange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float TimeBetweenBurst;
+
+	float LastBurstTime;
+
+	FTimerHandle TimerHandle_Burst;
 };

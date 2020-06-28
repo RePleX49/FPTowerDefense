@@ -47,6 +47,7 @@ bool AFWeapon::StartFire()
 
 	if (CurrentMagCount > 0 && !bIsReloading && FirstDelay == 0.0f)
 	{
+		//TODO move animation calls for weapon and player here
 		if (bIsAutomatic)
 		{
 			//TODO investigate removing redundancy with FirstDelay
@@ -113,8 +114,7 @@ bool AFWeapon::StartReload()
 void AFWeapon::Fire()
 {
 	if (CurrentMagCount > 0)
-	{
-		PlayWeaponFX();
+	{	
 		HandleFiring();
 		// Have separate function to handle fire for different fire modes such as burst
 	}
@@ -133,6 +133,7 @@ void AFWeapon::Fire()
 
 void AFWeapon::HandleFiring()
 {
+	PlayWeaponFX();
 	LastFireTime = GetWorld()->TimeSeconds;
 	CurrentMagCount--;
 
