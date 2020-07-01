@@ -84,7 +84,6 @@ void AFTrapper::UseOffensive()
 {
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PlaceTrap))
 	{
-		//TODO fix rebinding to PlaceTrap function when using ability
 		bInPlacementMode = true;
 		GetWorldTimerManager().SetTimer(TimerHandle_PlaceTrap, this, &AFTrapper::GetPlaceSpot, 0.017f, true, 0.0f);
 	}
@@ -102,7 +101,7 @@ void AFTrapper::UseSupport()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		FVector SpawnLoc = CameraComp->GetComponentLocation() + FVector(-125.0f, 0.0f, 0.0f);
+		FVector SpawnLoc = CameraComp->GetComponentLocation() + (GetActorRightVector() * -125.0f);
 
 		GetWorld()->SpawnActor<AActor>(TetherClass, SpawnLoc, CameraComp->GetComponentRotation(), SpawnParams);
 	}

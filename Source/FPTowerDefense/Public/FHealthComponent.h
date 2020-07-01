@@ -25,7 +25,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
 	float CurrentHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
+	float CurrentArmor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
 	float MaxHealth;
 
 	float CurrentShield;

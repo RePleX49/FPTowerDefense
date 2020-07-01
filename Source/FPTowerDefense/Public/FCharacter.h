@@ -80,6 +80,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	USkeletalMeshComponent* GetArmMesh() const { return ArmMesh; };
+
 	// function calls for playing animations through blueprint
 	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
 	void PlayFireAnim();

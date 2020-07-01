@@ -31,10 +31,9 @@ void AFWeapon::BeginPlay()
 	TimeBetweenShots = 60 / FireRate;
 	CurrentMagCount = MaxMagCount;
 
-	USkeletalMeshComponent* UseMesh = MeshComp;
-	if (MeshComp && ArmReloadMontage && UseMesh->AnimScriptInstance)
+	if (MeshComp && ArmReloadMontage && MeshComp->AnimScriptInstance)
 	{
-		UseMesh->AnimScriptInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AFWeapon::OnReloadNotify);
+		MeshComp->AnimScriptInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AFWeapon::OnReloadNotify);
 	}
 }
 
@@ -78,6 +77,13 @@ bool AFWeapon::StartFire()
 void AFWeapon::EndFire()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Fire);
+
+	// get owning character and call EndFire to stop animations
+	AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
+	if (OwningCharacter)
+	{
+		OwningCharacter->EndFire();
+	}
 }
 
 bool AFWeapon::StartReload()
@@ -94,8 +100,8 @@ bool AFWeapon::StartReload()
 			OwningCharacter->EndFire();
 		}
 
-		// actual reload function is called in Blueprint by Montage Notify
-		//PlayReloadAnim();
+		// Call reload animation here
+		// consider moving to a separate ReloadAnim function
 		USkeletalMeshComponent* UseMesh = MeshComp;
 		if (MeshComp && ArmReloadMontage && UseMesh->AnimScriptInstance)
 		{
@@ -116,27 +122,33 @@ void AFWeapon::Fire()
 	if (CurrentMagCount > 0)
 	{	
 		HandleFiring();
+		LastFireTime = GetWorld()->TimeSeconds;
 		// Have separate function to handle fire for different fire modes such as burst
 	}
 	else
 	{
-		EndFire();
-
-		// get owning character and call EndFire to stop animations
-		AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
-		if (OwningCharacter)
-		{
-			OwningCharacter->EndFire();
-		}
+		EndFire();	
 	}
 }
 
 void AFWeapon::HandleFiring()
 {
-	PlayWeaponFX();
-	LastFireTime = GetWorld()->TimeSeconds;
-	CurrentMagCount--;
+	// Play fire animation on owning Mesh
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		AFCharacter* MyCharacter = Cast<AFCharacter>(MyOwner);
+		if (MyCharacter)
+		{
+			USkeletalMeshComponent* UseMesh = MyCharacter->GetArmMesh();
+			if (UseMesh && FireMontage && UseMesh->AnimScriptInstance)
+			{
+				UseMesh->AnimScriptInstance->Montage_Play(FireMontage, 1.0f);
+			}
+		}
+	}
 
+	PlayWeaponFX();
 	// Calls separate function to handle actual Fire trace
 }
 

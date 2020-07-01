@@ -2,77 +2,30 @@
 
 
 #include "FBurstRifle.h"
-#include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
-#include "FPTowerDefense/FPTowerDefense.h"
-
-static int32 DebugWeaponDrawing = 0;
-FAutoConsoleVariableRef CVARDebugWeaponDrawing(
-	TEXT("FPTowerDefense.DebugWeapons"),
-	DebugWeaponDrawing,
-	TEXT("Draw Debug Lines for Weapons"),
-	ECVF_Cheat);
 
 void AFBurstRifle::HandleFiring()
 {
-	LastFireTime = GetWorld()->TimeSeconds;
-	BurstFire();
-}
+	Super::HandleFiring();
 
-void AFBurstRifle::FireShot()
-{
-	AActor* MyOwner = GetOwner();
-
-	if (MyOwner)
-	{
-		FVector ViewLocation;
-		FRotator ViewRotation;
-
-		MyOwner->GetActorEyesViewPoint(ViewLocation, ViewRotation);
-
-		FVector ShotDirection = ViewRotation.Vector();
-		FVector TraceEnd = ViewLocation + (ShotDirection * WeaponRange);
-
-		FHitResult Hit;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(MyOwner);
-		QueryParams.AddIgnoredActor(this);
-		QueryParams.bTraceComplex = true;
-
-		if (DebugWeaponDrawing > 0)
-		{
-			DrawDebugLine(GetWorld(), ViewLocation, TraceEnd, FColor::Red, true, 2.0f, 0, 2.5f);
-		}
-
-		if (GetWorld()->LineTraceSingleByChannel(Hit, ViewLocation, TraceEnd, COLLISION_WEAPON, QueryParams))
-		{
-			AActor* HitActor = Hit.GetActor();
-			
-			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(),
-				MyOwner, DamageType);
-		}
-
-		LastBurstTime = GetWorld()->TimeSeconds;
-		CurrentBurst++;
-
-		PlayWeaponFX();
-
-		CurrentMagCount--;
-
-		BurstFire();
-	}
-}
-
-void AFBurstRifle::BurstFire()
-{
-	if (CurrentBurst < BurstCount)
+	// Check which Burst shot we are on 
+	if (CurrentBurst < BurstCount && CurrentMagCount > 0)
 	{
 		float FirstBurstDelay = FMath::Max(TimeBetweenBurst + LastBurstTime - GetWorld()->TimeSeconds, 0.0f);
-		GetWorldTimerManager().SetTimer(TimerHandle_Burst, this, &AFBurstRifle::FireShot, TimeBetweenBurst, false, FirstBurstDelay);	
+		GetWorldTimerManager().SetTimer(TimerHandle_Burst, this, &AFBurstRifle::FireShot, TimeBetweenBurst, false, FirstBurstDelay);
 	}
 	else
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_Burst);
+		EndFire();
 		CurrentBurst = 0;
 	}
+}
+
+void AFBurstRifle::FireShot()
+{
+	Super::FireShot();
+
+	LastBurstTime = GetWorld()->TimeSeconds;
+	CurrentBurst++;
+	HandleFiring();
 }

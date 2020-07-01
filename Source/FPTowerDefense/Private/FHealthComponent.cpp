@@ -7,8 +7,8 @@
 UFHealthComponent::UFHealthComponent()
 {
 	MaxHealth = 100.0f;
+	CurrentArmor = 0.0f;
 }
-
 
 // Called when the game starts
 void UFHealthComponent::BeginPlay()
@@ -34,7 +34,7 @@ void UFHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	}
 
 	// Update Health value
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth + CurrentArmor - Damage, 0.0f, MaxHealth);
 
 	UE_LOG(LogTemp, Log, TEXT("%s Health: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentHealth));
 
