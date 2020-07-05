@@ -71,6 +71,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	UParticleSystem* ShellEject;
 
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UParticleSystem* DefaultImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	UParticleSystem* FleshImpactEffect;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anim")
 	UAnimMontage* ArmReloadMontage;
 
