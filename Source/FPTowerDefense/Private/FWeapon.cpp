@@ -63,11 +63,15 @@ bool AFWeapon::StartFire()
 	{
 		StartReload();
 
-		AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
-		if (OwningCharacter)
+		AActor* MyOwner = GetOwner();
+		if (MyOwner)
 		{
-			OwningCharacter->PlayReloadAnim();
-		}
+			AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
+			if (OwningCharacter)
+			{
+				OwningCharacter->PlayReloadAnim();
+			}
+		}	
 	}
 	
 	// when we can't fire, return false so that Owner doesn't run anims
@@ -78,11 +82,15 @@ void AFWeapon::EndFire()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Fire);
 
-	// get owning character and call EndFire to stop animations
-	AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
-	if (OwningCharacter)
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
 	{
-		OwningCharacter->EndFire();
+		// get owning character and call EndFire to stop animations
+		AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
+		if (OwningCharacter)
+		{
+			OwningCharacter->EndFire();
+		}
 	}
 }
 
@@ -92,14 +100,6 @@ bool AFWeapon::StartReload()
 	{
 		EndFire();
 
-		//TODO make combine both endfires into a single function for ease of use
-		// get owning character and call EndFire to stop animations
-		AFCharacter* OwningCharacter = Cast<AFCharacter>(GetOwner());
-		if (OwningCharacter)
-		{
-			OwningCharacter->EndFire();
-		}
-
 		// Call reload animation here
 		// consider moving to a separate ReloadAnim function
 		USkeletalMeshComponent* UseMesh = MeshComp;
@@ -107,6 +107,21 @@ bool AFWeapon::StartReload()
 		{
 			UseMesh->AnimScriptInstance->Montage_Play(GunReloadMontage, 1.0f);
 		}
+
+		AActor* MyOwner = GetOwner();
+		if (MyOwner)
+		{
+			AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
+			// call reload animation on character ArmMesh
+			if (OwningCharacter)
+			{
+				USkeletalMeshComponent* CharArmMesh = OwningCharacter->GetArmMesh();
+				if (CharArmMesh && ArmReloadMontage && CharArmMesh->AnimScriptInstance)
+				{
+					CharArmMesh->AnimScriptInstance->Montage_Play(ArmReloadMontage, 1.0f);
+				}
+			}
+		}	
 
 		bIsReloading = true;
 
@@ -133,14 +148,14 @@ void AFWeapon::Fire()
 
 void AFWeapon::HandleFiring()
 {
-	// Play fire animation on owning Mesh
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
 	{
-		AFCharacter* MyCharacter = Cast<AFCharacter>(MyOwner);
-		if (MyCharacter)
+		// Play fire animation on owning Mesh
+		AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
+		if (OwningCharacter)
 		{
-			USkeletalMeshComponent* UseMesh = MyCharacter->GetArmMesh();
+			USkeletalMeshComponent* UseMesh = OwningCharacter->GetArmMesh();
 			if (UseMesh && FireMontage && UseMesh->AnimScriptInstance)
 			{
 				UseMesh->AnimScriptInstance->Montage_Play(FireMontage, 1.0f);

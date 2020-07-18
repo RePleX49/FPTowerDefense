@@ -17,7 +17,7 @@ public:
 
 	bool StartFire();
 	void EndFire();
-	bool StartReload();
+	virtual bool StartReload();
 
 	bool GetIsAutomatic() { return bIsAutomatic; };
 

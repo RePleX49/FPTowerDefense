@@ -3,6 +3,8 @@
 
 #include "FEnemy.h"
 #include "FHealthComponent.h"
+#include "FPTowerDefense/FPTowerDefense.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AFEnemy::AFEnemy()
@@ -11,7 +13,6 @@ AFEnemy::AFEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("Health Comp"));
-
 }
 
 // Called when the game starts or when spawned

@@ -40,13 +40,13 @@ protected:
 
 	virtual void UseOffensive();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
-	void UseOffensiveBP();
-
 	virtual void UseSupport();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
 	void UseSupportBP();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
+	void UseOffensiveBP();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;

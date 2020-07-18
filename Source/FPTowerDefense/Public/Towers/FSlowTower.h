@@ -3,18 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FCharacter.h"
-#include "FDefender.generated.h"
+#include "FTower.h"
+#include "FSlowTower.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FPTOWERDEFENSE_API AFDefender : public AFCharacter
+class FPTOWERDEFENSE_API AFSlowTower : public AFTower
 {
 	GENERATED_BODY()
 	
-public:
-
-
 };

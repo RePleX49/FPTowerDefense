@@ -17,7 +17,6 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 void AFWeapon_HitScan::FireShot()
 {
 	AActor* MyOwner = GetOwner();
-
 	if (MyOwner)
 	{
 		FVector ViewLocation;

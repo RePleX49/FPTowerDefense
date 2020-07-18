@@ -108,6 +108,7 @@ void AFCharacter::EndFire()
 	if (bIsFiring)
 	{
 		bIsFiring = false;
+		// TODO switch animation calls to be in script
 		EndFireAnim();
 
 		if (EquippedWeapon)
@@ -124,6 +125,7 @@ void AFCharacter::Reload()
 		if (EquippedWeapon->StartReload())
 		{
 			PlayReloadAnim();
+			EndFire();
 		}	
 	}
 }

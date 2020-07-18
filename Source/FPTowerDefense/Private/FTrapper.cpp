@@ -101,9 +101,12 @@ void AFTrapper::UseSupport()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		FVector SpawnLoc = CameraComp->GetComponentLocation() + (GetActorRightVector() * -125.0f);
+		// Get a direction vector from SpawnLoc to point where player is looking
+		FVector SpawnLocation = CameraComp->GetComponentLocation() + (GetActorRightVector() * -65.0f);
+		FVector LookAtPosition = CameraComp->GetComponentLocation() + (CameraComp->GetForwardVector() * 2000.0f);
+		FVector ThrowDirection = LookAtPosition - SpawnLocation;
 
-		GetWorld()->SpawnActor<AActor>(TetherClass, SpawnLoc, CameraComp->GetComponentRotation(), SpawnParams);
+		GetWorld()->SpawnActor<AActor>(TetherClass, SpawnLocation, ThrowDirection.Rotation(), SpawnParams);
 	}
 	else
 	{
@@ -124,7 +127,8 @@ void AFTrapper::Tick(float DeltaTime)
 
 	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 	{
-		if (Hit.GetActor())
+		//TODO fix class checks
+		if (Hit.GetActor() && Hit.GetActor()->GetClass() == TrapClass->StaticClass())
 		{
 			// TODO refactor actor checks
 			if (PreviousActor)

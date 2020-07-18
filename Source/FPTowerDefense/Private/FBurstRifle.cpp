@@ -3,6 +3,17 @@
 
 #include "FBurstRifle.h"
 
+bool AFBurstRifle::StartReload()
+{
+	if (Super::StartReload())
+	{
+		StopBurst();
+		return true;
+	}
+	
+	return false;
+}
+
 void AFBurstRifle::HandleFiring()
 {
 	Super::HandleFiring();
@@ -15,9 +26,7 @@ void AFBurstRifle::HandleFiring()
 	}
 	else
 	{
-		GetWorldTimerManager().ClearTimer(TimerHandle_Burst);
-		EndFire();
-		CurrentBurst = 0;
+		StopBurst();
 	}
 }
 
@@ -28,4 +37,12 @@ void AFBurstRifle::FireShot()
 	LastBurstTime = GetWorld()->TimeSeconds;
 	CurrentBurst++;
 	HandleFiring();
+}
+
+void AFBurstRifle::StopBurst()
+{
+	// reset burst count
+	GetWorldTimerManager().ClearTimer(TimerHandle_Burst);
+	EndFire();
+	CurrentBurst = 0;
 }

@@ -13,12 +13,17 @@ UCLASS()
 class FPTOWERDEFENSE_API AFBurstRifle : public AFWeapon_HitScan
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual bool StartReload() override;
+
 protected:
 
 	virtual void HandleFiring() override;
 
 	virtual void FireShot() override;
+
+	void StopBurst();
 
 	int CurrentBurst;
 
