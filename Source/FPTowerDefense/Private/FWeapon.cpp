@@ -61,17 +61,7 @@ bool AFWeapon::StartFire()
 	}
 	else if (CurrentMagCount == 0 && !bIsReloading)
 	{
-		StartReload();
-
-		AActor* MyOwner = GetOwner();
-		if (MyOwner)
-		{
-			AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
-			if (OwningCharacter)
-			{
-				OwningCharacter->PlayReloadAnim();
-			}
-		}	
+		StartReload();	
 	}
 	
 	// when we can't fire, return false so that Owner doesn't run anims

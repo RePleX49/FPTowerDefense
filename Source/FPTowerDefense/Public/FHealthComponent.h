@@ -22,6 +22,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "HealthComponent")
+	TSubclassOf<UDamageType> SlowDamage;
+
 	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
 	float CurrentHealth;
 
@@ -32,6 +35,12 @@ protected:
 	float MaxHealth;
 
 	float CurrentShield;
+
+	float DefaultMoveSpeed;
+
+	FTimerHandle TimerHandle_ResetSlow;
+
+	void ResetMoveSpeed();
 
 	UFUNCTION()
 	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy,

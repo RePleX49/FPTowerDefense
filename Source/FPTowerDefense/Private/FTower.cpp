@@ -36,12 +36,7 @@ void AFTower::Attack()
 {
 	if (CurrentTarget)
 	{
-		FVector TraceStart = GetActorLocation();
-		FVector TraceEnd = CurrentTarget->GetTargetLocation();
-
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
-
-		UGameplayStatics::ApplyDamage(CurrentTarget, 5.0f, nullptr, this, DamageType);
+		HandleAttack();
 	}
 	else
 	{
@@ -49,14 +44,25 @@ void AFTower::Attack()
 	}
 }
 
+void AFTower::HandleAttack()
+{
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = CurrentTarget->GetTargetLocation();
+
+	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+
+	UGameplayStatics::ApplyDamage(CurrentTarget, 5.0f, nullptr, this, DamageType);
+}
+
 void AFTower::FindTarget()
 {
 	TArray<AActor*> OverlappedActors;
-	SphereComp->GetOverlappingActors(OverlappedActors);
+	SphereComp->GetOverlappingActors(OverlappedActors, AFEnemy::StaticClass());
 
 	for (AActor* actor : OverlappedActors)
 	{
-		if (actor != this && Cast<AFEnemy>(actor))
+		// Cast check possibly redundant due to Overlap class check
+		if (Cast<AFEnemy>(actor))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
 			// TODO sort target by health, or distance

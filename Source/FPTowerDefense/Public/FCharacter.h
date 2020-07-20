@@ -82,7 +82,9 @@ public:
 
 	USkeletalMeshComponent* GetArmMesh() const { return ArmMesh; };
 
-	// function calls for playing animations through blueprint
+	// DEPRECATED function calls for playing animations through blueprint
+	// Animation calls moved to FWeapon class
+	/*
 	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
 	void PlayFireAnim();
 
@@ -91,5 +93,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
 	void PlayReloadAnim();
+	*/
+	
 
 };

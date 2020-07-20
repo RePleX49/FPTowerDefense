@@ -14,4 +14,6 @@ class FPTOWERDEFENSE_API AFSlowTower : public AFTower
 {
 	GENERATED_BODY()
 	
+protected:
+
 };

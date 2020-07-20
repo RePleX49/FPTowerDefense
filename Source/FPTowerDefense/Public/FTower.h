@@ -23,6 +23,8 @@ protected:
 
 	virtual void Attack();
 
+	virtual void HandleAttack();
+
 	virtual void FindTarget();
 
 	FTimerHandle TimerHandle_FindTarget;

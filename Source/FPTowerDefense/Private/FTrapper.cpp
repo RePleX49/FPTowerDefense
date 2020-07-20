@@ -128,7 +128,7 @@ void AFTrapper::Tick(float DeltaTime)
 	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 	{
 		//TODO fix class checks
-		if (Hit.GetActor() && Hit.GetActor()->GetClass() == TrapClass->StaticClass())
+		if (Hit.GetActor() && Hit.GetActor()->IsA(TrapClass))
 		{
 			// TODO refactor actor checks
 			if (PreviousActor)
