@@ -75,6 +75,11 @@ void UFHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	// Update Health value
 	CurrentHealth = FMath::Clamp(CurrentHealth + CurrentArmor - Damage, 0.0f, MaxHealth);
 
+	if (CurrentHealth <= 0.0f)
+	{
+		bIsDead = true;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("%s Health: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentHealth));
 
 	OnHealthChanged.Broadcast(this, CurrentHealth, Damage, DamageType, InstigatedBy, DamageCauser);

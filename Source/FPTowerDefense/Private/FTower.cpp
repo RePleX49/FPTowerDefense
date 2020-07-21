@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "FEnemy.h"
+#include "FHealthComponent.h"
 
 // Sets default values
 AFTower::AFTower()
@@ -29,6 +30,7 @@ void AFTower::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SphereComp->SetSphereRadius(RangeRadius);
 	CurrentTarget = nullptr;
 }
 
@@ -52,6 +54,16 @@ void AFTower::HandleAttack()
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
 	UGameplayStatics::ApplyDamage(CurrentTarget, 5.0f, nullptr, this, DamageType);
+
+	// if target returns dead after hit clear target reference
+	UFHealthComponent* TargetHealthComp = nullptr;
+	TargetHealthComp = Cast<UFHealthComponent>(CurrentTarget->GetComponentByClass(UFHealthComponent::StaticClass()));
+
+	if (TargetHealthComp && TargetHealthComp->IsDead())
+	{
+		CurrentTarget = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT("Cleared target"));
+	}
 }
 
 void AFTower::FindTarget()
@@ -61,12 +73,15 @@ void AFTower::FindTarget()
 
 	for (AActor* actor : OverlappedActors)
 	{
-		// Cast check possibly redundant due to Overlap class check
-		if (Cast<AFEnemy>(actor))
+		//UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
+		// TODO sort target by health, or distance
+		
+		UFHealthComponent* TargetHealthComp = nullptr;
+		TargetHealthComp = Cast<UFHealthComponent>(actor->GetComponentByClass(UFHealthComponent::StaticClass()));
+
+		// check if potential target is alive
+		if (TargetHealthComp && !TargetHealthComp->IsDead())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
-			// TODO sort target by health, or distance
-			
 			if (CurrentTarget == nullptr)
 			{
 				CurrentTarget = actor;

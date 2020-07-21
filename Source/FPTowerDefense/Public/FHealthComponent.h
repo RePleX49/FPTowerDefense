@@ -18,6 +18,8 @@ public:
 	// Sets default values for this component's properties
 	UFHealthComponent();
 
+	bool IsDead() { return bIsDead; };
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -37,6 +39,9 @@ protected:
 	float CurrentShield;
 
 	float DefaultMoveSpeed;
+
+	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+	bool bIsDead;
 
 	FTimerHandle TimerHandle_ResetSlow;
 

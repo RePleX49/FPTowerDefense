@@ -44,6 +44,7 @@ protected:
 
 	AActor* CurrentTarget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Turret")
 	TSubclassOf<UDamageType> DamageType;
 
 public:	
