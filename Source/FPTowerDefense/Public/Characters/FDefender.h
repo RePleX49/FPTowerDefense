@@ -17,4 +17,10 @@ class FPTOWERDEFENSE_API AFDefender : public AFCharacter
 public:
 
 
+protected:
+
+	virtual void UseOffensive() override;
+
+	virtual void UseSupport() override;
+
 };

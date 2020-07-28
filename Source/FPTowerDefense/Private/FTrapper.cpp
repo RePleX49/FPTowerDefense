@@ -34,7 +34,6 @@ void AFTrapper::GetPlaceSpot()
 
 		/*
 		DrawDebugLine(GetWorld(), TraceStart, HitA.Location, FColor::Red, false, 0.1f, 0, 0.25f);
-		
 		*/
 		
 		DrawDebugSphere(GetWorld(), HitA.Location, 25.0f, 12, FColor::Red, false, 0.1f, 0, 0.35f);
@@ -127,7 +126,6 @@ void AFTrapper::Tick(float DeltaTime)
 
 	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 	{
-		//TODO fix class checks
 		if (Hit.GetActor() && Hit.GetActor()->IsA(TrapClass))
 		{
 			// TODO refactor actor checks
@@ -143,9 +141,7 @@ void AFTrapper::Tick(float DeltaTime)
 				}		
 			}
 
-			// TODO figure out filtering to only trap mesh
 			UActorComponent* ActorComp = Hit.GetActor()->GetComponentByClass(UStaticMeshComponent::StaticClass());
-
 			if (ActorComp)
 			{
 				UStaticMeshComponent* PrimComp = Cast<UStaticMeshComponent>(ActorComp);
@@ -153,6 +149,11 @@ void AFTrapper::Tick(float DeltaTime)
 			}
 
 			PreviousActor = Hit.GetActor();
+		}
+		else if (PreviousActor)
+		{
+			RemoveOutline(PreviousActor);
+			PreviousActor = nullptr;
 		}
 	}
 	else

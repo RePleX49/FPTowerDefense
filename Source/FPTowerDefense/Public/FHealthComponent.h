@@ -20,6 +20,12 @@ public:
 
 	bool IsDead() { return bIsDead; };
 
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void Heal(float HealAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void RepairShield(float RepairAmount);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -31,12 +37,13 @@ protected:
 	float CurrentHealth;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
-	float CurrentArmor;
+	float CurrentShield;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
 	float MaxHealth;
 
-	float CurrentShield;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
+	float MaxShield;
 
 	float DefaultMoveSpeed;
 

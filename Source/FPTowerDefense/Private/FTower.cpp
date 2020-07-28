@@ -76,7 +76,7 @@ void AFTower::FindTarget()
 		//UE_LOG(LogTemp, Warning, TEXT("%s in Range"), *actor->GetName());
 		// TODO sort target by health, or distance
 		
-		UFHealthComponent* TargetHealthComp = nullptr;
+		UFHealthComponent* TargetHealthComp;
 		TargetHealthComp = Cast<UFHealthComponent>(actor->GetComponentByClass(UFHealthComponent::StaticClass()));
 
 		// check if potential target is alive

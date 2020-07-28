@@ -82,6 +82,8 @@ public:
 
 	USkeletalMeshComponent* GetArmMesh() const { return ArmMesh; };
 
+	UCameraComponent* GetCameraComp() const { return CameraComp; };
+
 	// DEPRECATED function calls for playing animations through blueprint
 	// Animation calls moved to FWeapon class
 	/*

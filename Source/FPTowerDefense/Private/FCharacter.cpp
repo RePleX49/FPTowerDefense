@@ -4,8 +4,10 @@
 #include "FCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "FWeapon.h"
 #include "FHealthComponent.h"
+#include "FPTowerDefense/FPTowerDefense.h"
 
 // Sets default values
 AFCharacter::AFCharacter()
@@ -21,6 +23,10 @@ AFCharacter::AFCharacter()
 	ArmMesh->SetupAttachment(CameraComp);
 
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("HealthComp"));
+
+	// assign capsule collision type to player and weapon collision response to ignore
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel1);
 
 	SprintSpeed = 550.0f;
 	bIsFiring = false;

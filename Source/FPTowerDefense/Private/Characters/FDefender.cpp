@@ -3,5 +3,12 @@
 
 #include "FPTowerDefense/Public/Characters/FDefender.h"
 
+void AFDefender::UseOffensive()
+{
+	Super::UseOffensive();
+}
 
-
+void AFDefender::UseSupport()
+{
+	Super::UseSupport();
+}

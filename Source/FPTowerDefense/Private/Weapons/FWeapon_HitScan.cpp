@@ -68,8 +68,6 @@ void AFWeapon_HitScan::FireShot()
 		}
 
 		CurrentMagCount--;
-
-		//TODO add burst cancel to reload function
 	}
 }
 

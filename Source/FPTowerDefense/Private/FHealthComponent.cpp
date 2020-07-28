@@ -9,7 +9,19 @@
 UFHealthComponent::UFHealthComponent()
 {
 	MaxHealth = 100.0f;
-	CurrentArmor = 0.0f;
+	MaxShield = 100.0f;
+}
+
+void UFHealthComponent::Heal(float HealAmount)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.0f, MaxHealth);
+}
+
+void UFHealthComponent::RepairShield(float RepairAmount)
+{
+	CurrentShield = FMath::Clamp(CurrentShield + RepairAmount, 0.0f, MaxShield);
+
+	UE_LOG(LogTemp, Log, TEXT("%s Shield: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentShield));
 }
 
 // Called when the game starts
@@ -73,13 +85,30 @@ void UFHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	}
 
 	// Update Health value
-	CurrentHealth = FMath::Clamp(CurrentHealth + CurrentArmor - Damage, 0.0f, MaxHealth);
+	float LeftOverDamage = 0.0f;
+
+	if (CurrentShield > 0.0f)
+	{
+		CurrentShield = FMath::Clamp(CurrentShield - Damage, 0.0f, MaxShield);
+
+		LeftOverDamage = CurrentShield - Damage;
+		if (LeftOverDamage < 0.0f)
+		{
+			// since left over damage is already negative just add instead of subtracted
+			CurrentHealth = FMath::Clamp(CurrentHealth + LeftOverDamage, 0.0f, MaxHealth);
+		}
+	}
+	else
+	{
+		CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
+	}
 
 	if (CurrentHealth <= 0.0f)
 	{
 		bIsDead = true;
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("%s Shield: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentShield));
 	UE_LOG(LogTemp, Log, TEXT("%s Health: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentHealth));
 
 	OnHealthChanged.Broadcast(this, CurrentHealth, Damage, DamageType, InstigatedBy, DamageCauser);

@@ -46,7 +46,6 @@ bool AFWeapon::StartFire()
 
 	if (CurrentMagCount > 0 && !bIsReloading && FirstDelay == 0.0f)
 	{
-		//TODO move animation calls for weapon and player here
 		if (bIsAutomatic)
 		{
 			//TODO investigate removing redundancy with FirstDelay
@@ -64,7 +63,7 @@ bool AFWeapon::StartFire()
 		StartReload();	
 	}
 	
-	// when we can't fire, return false so that Owner doesn't run anims
+	// when we can't fire, return false
 	return false;
 }
 
@@ -75,7 +74,7 @@ void AFWeapon::EndFire()
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
 	{
-		// get owning character and call EndFire to stop animations
+		// get owning character and call EndFire
 		AFCharacter* OwningCharacter = Cast<AFCharacter>(MyOwner);
 		if (OwningCharacter)
 		{
@@ -126,9 +125,9 @@ void AFWeapon::Fire()
 {
 	if (CurrentMagCount > 0)
 	{	
+		// HandleFiring runs actual firing logic
 		HandleFiring();
 		LastFireTime = GetWorld()->TimeSeconds;
-		// Have separate function to handle fire for different fire modes such as burst
 	}
 	else
 	{
@@ -154,7 +153,6 @@ void AFWeapon::HandleFiring()
 	}
 
 	PlayWeaponFX();
-	// Calls separate function to handle actual Fire trace
 }
 
 void AFWeapon::Reload()

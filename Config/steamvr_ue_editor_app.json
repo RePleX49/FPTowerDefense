@@ -2,7 +2,7 @@
 	"source": "UE",
 	"applications": [
 		{
-			"app_key": "application.generated.ue.fptowerdefense-13594126.ue4editor.exe",
+			"app_key": "application.generated.ue.fptowerdefense-13908680.ue4editor.exe",
 			"launch_type": "url",
 			"url": "steam://launch/",
 			"action_manifest_path": "D:/UE4_Projects/FPTowerDefense/Config/SteamVRBindings/steamvr_manifest.json",
@@ -10,7 +10,7 @@
 			{
 				"en_us":
 				{
-					"name": "FPTowerDefense-13594126 [UE Editor]"
+					"name": "FPTowerDefense-13908680 [UE Editor]"
 				}
 			}
 		}
