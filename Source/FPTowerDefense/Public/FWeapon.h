@@ -59,10 +59,10 @@ protected:
 
 	float LastFireTime;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
 	int CurrentMagCount;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (ClampMin = 0.0f))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (ClampMin = 0.0f))
 	int MaxMagCount;
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")

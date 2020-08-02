@@ -4,6 +4,7 @@
 #include "FWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "FCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AFWeapon::AFWeapon()
@@ -21,6 +22,8 @@ AFWeapon::AFWeapon()
 
 	MuzzleSocketName = "MuzzleFlashSocket";
 	ShellEjectSocketName = "ShellEjectionSocket";
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -183,5 +186,13 @@ void AFWeapon::PlayWeaponFX()
 		FTransform EjectTransform = MeshComp->GetSocketTransform(ShellEjectSocketName);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShellEject, EjectTransform);
 	}
+}
+
+void AFWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFWeapon, CurrentMagCount);
+	DOREPLIFETIME(AFWeapon, MaxMagCount);
 }
 

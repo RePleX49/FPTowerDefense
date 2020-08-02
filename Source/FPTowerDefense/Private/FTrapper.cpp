@@ -79,7 +79,7 @@ void AFTrapper::PlaceTrap()
 	}
 }
 
-void AFTrapper::UseOffensive()
+void AFTrapper::UseAbilityA()
 {
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PlaceTrap))
 	{
@@ -92,7 +92,7 @@ void AFTrapper::UseOffensive()
 	}
 }
 
-void AFTrapper::UseSupport()
+void AFTrapper::UseAbilityB()
 {
 	// throw tether projectile
 	if (TetherClass)

@@ -19,8 +19,5 @@ public:
 
 protected:
 
-	virtual void UseOffensive() override;
-
-	virtual void UseSupport() override;
 
 };

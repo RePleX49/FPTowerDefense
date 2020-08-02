@@ -38,9 +38,15 @@ protected:
 
 	void Reload();
 
-	virtual void UseOffensive();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAbilityA();
 
-	virtual void UseSupport();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAbilityB();
+
+	virtual void UseAbilityA();
+
+	virtual void UseAbilityB();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
 	void UseSupportBP();
@@ -60,7 +66,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<AFWeapon> PrimaryWeapon;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
 	AFWeapon* EquippedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -72,6 +78,21 @@ protected:
 	float DefaultWalkSpeed;
 
 	bool bIsFiring;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float CooldownRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Ability")
+	float Cooldown_Support;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability")
+	float CooldownTime_Support;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Ability")
+	float Cooldown_Offensive;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability")
+	float CooldownTime_Offensive;
 
 public:	
 	// Called every frame

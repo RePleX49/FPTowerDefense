@@ -26,9 +26,9 @@ protected:
 
 	void PlaceTrap();
 
-	virtual void UseOffensive() override;
+	virtual void UseAbilityA() override;
 
-	virtual void UseSupport() override;
+	virtual void UseAbilityB() override;
 
 	FTimerHandle TimerHandle_PlaceTrap;
 
