@@ -38,12 +38,6 @@ protected:
 
 	void Reload();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerAbilityA();
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerAbilityB();
-
 	virtual void UseAbilityA();
 
 	virtual void UseAbilityB();
@@ -53,6 +47,12 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
 	void UseOffensiveBP();
+
+	void GetTurretPlacement();
+
+	void EnterBuildMode();
+
+	void BuildTurret();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
@@ -65,6 +65,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<AFWeapon> PrimaryWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Turrets")
+	TSubclassOf<AActor> TurretBaseClass;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
 	AFWeapon* EquippedWeapon;
@@ -94,6 +97,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability")
 	float CooldownTime_Offensive;
 
+	bool bInBuildMode;
+
+	FVector TurretPlacement;
+
+	FTimerHandle TimerHandle_Turret;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -104,19 +113,5 @@ public:
 	USkeletalMeshComponent* GetArmMesh() const { return ArmMesh; };
 
 	UCameraComponent* GetCameraComp() const { return CameraComp; };
-
-	// DEPRECATED function calls for playing animations through blueprint
-	// Animation calls moved to FWeapon class
-	/*
-	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
-	void PlayFireAnim();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
-	void EndFireAnim();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Anim")
-	void PlayReloadAnim();
-	*/
-	
 
 };

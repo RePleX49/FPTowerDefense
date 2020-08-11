@@ -84,7 +84,7 @@ void AFTrapper::UseAbilityA()
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PlaceTrap))
 	{
 		bInPlacementMode = true;
-		GetWorldTimerManager().SetTimer(TimerHandle_PlaceTrap, this, &AFTrapper::GetPlaceSpot, 0.017f, true, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_PlaceTrap, this, &AFTrapper::GetPlaceSpot, 0.0167f, true, 0.0f);
 	}
 	else
 	{

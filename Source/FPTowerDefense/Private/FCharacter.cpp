@@ -31,6 +31,7 @@ AFCharacter::AFCharacter()
 
 	SprintSpeed = 550.0f;
 	bIsFiring = false;
+	bInBuildMode = false;
 
 	CooldownTime_Offensive = 4.0f;
 	CooldownTime_Support = 4.0f;
@@ -137,28 +138,6 @@ void AFCharacter::Reload()
 	}
 }
 
-void AFCharacter::ServerAbilityA_Implementation()
-{
-	UseAbilityA();
-}
-
-bool AFCharacter::ServerAbilityA_Validate()
-{
-	// would run validation checks here
-	return true;
-}
-
-void AFCharacter::ServerAbilityB_Implementation()
-{
-	UseAbilityB();
-}
-
-bool AFCharacter::ServerAbilityB_Validate()
-{
-	// would run validation checks here
-	return true;
-}
-
 void AFCharacter::UseAbilityA()
 {
 	if (Cooldown_Offensive == CooldownTime_Offensive)
@@ -176,6 +155,64 @@ void AFCharacter::UseAbilityB()
 		UE_LOG(LogTemp, Warning, TEXT("Used Support Ability"));
 		Cooldown_Support = 0.0f;
 		UseSupportBP();
+	}
+}
+
+void AFCharacter::GetTurretPlacement()
+{
+	FHitResult HitA, HitB;
+	FVector TraceStart = CameraComp->GetComponentLocation();
+	FVector TraceEnd = TraceStart + (CameraComp->GetForwardVector() * 3000.0f);
+	FCollisionQueryParams QueryParams;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitA, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (HitA.GetActor() && HitA.GetActor()->IsA(TurretBaseClass))
+		{
+			TurretPlacement = HitA.GetActor()->GetActorLocation(); // Change GetLocation to custom on Base
+		}
+		else
+		{
+			TurretPlacement = HitA.Location;
+		}
+
+		DrawDebugSphere(GetWorld(), TurretPlacement, 50.0f, 12, FColor::Green, false, 0.1f, 0, 0.35f);
+	}
+	else if (GetWorld()->LineTraceSingleByChannel(HitB, TraceEnd, TraceEnd + (FVector::UpVector * -3000.0f), ECC_Visibility, QueryParams))
+	{
+		// if first trace didn't hit, trace down to check for floor
+
+		if (HitB.GetActor() && HitB.GetActor()->IsA(TurretBaseClass))
+		{
+			TurretPlacement = HitB.GetActor()->GetActorLocation(); // Change GetLocation to custom on Base
+		}
+		else
+		{
+			TurretPlacement = HitB.Location;
+		}
+
+		DrawDebugSphere(GetWorld(), TurretPlacement, 50.0f, 12, FColor::Green, false, 0.1f, 0, 0.35f);
+	}
+}
+
+void AFCharacter::EnterBuildMode()
+{
+	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Turret))
+	{
+		bInBuildMode = true;
+		GetWorldTimerManager().SetTimer(TimerHandle_Turret, this, &AFCharacter::GetTurretPlacement, 0.0167f, true, 0.0f);	
+	}
+	else
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Turret);
+	}
+}
+
+void AFCharacter::BuildTurret()
+{
+	if (bInBuildMode)
+	{
+		// Run build turret logic
 	}
 }
 
@@ -217,6 +254,7 @@ void AFCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Offensive", IE_Pressed, this, &AFCharacter::UseAbilityA);
 	PlayerInputComponent->BindAction("Support", IE_Pressed, this, &AFCharacter::UseAbilityB);
+	PlayerInputComponent->BindAction("Build", IE_Pressed, this, &AFCharacter::EnterBuildMode);
 }
 
 void AFCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
