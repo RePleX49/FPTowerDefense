@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
 	float AttackSpeed;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	float AttackDamage;
+
 	AActor* CurrentTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Turret")

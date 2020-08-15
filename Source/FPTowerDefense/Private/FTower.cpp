@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "FEnemy.h"
 #include "FHealthComponent.h"
+#include "FPTowerDefense/FPTowerDefense.h"
 
 // Sets default values
 AFTower::AFTower()
@@ -20,6 +21,7 @@ AFTower::AFTower()
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Comp"));
 	SphereComp->SetSphereRadius(RangeRadius);
 	SphereComp->SetupAttachment(MeshComp);
+	SphereComp->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	AttackSpeed = 0.2f;
 	
@@ -53,7 +55,7 @@ void AFTower::HandleAttack()
 
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
-	UGameplayStatics::ApplyDamage(CurrentTarget, 5.0f, nullptr, this, DamageType);
+	UGameplayStatics::ApplyDamage(CurrentTarget, AttackDamage, nullptr, this, DamageType);
 
 	// if target returns dead after hit clear target reference
 	UFHealthComponent* TargetHealthComp = nullptr;

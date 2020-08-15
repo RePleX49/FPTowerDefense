@@ -9,6 +9,7 @@
 #include "FHealthComponent.h"
 #include "FPTowerDefense/FPTowerDefense.h"
 #include "Net/UnrealNetwork.h"
+#include "FPTowerDefense/Public/Towers/FTowerBase.h"
 
 // Sets default values
 AFCharacter::AFCharacter()
@@ -27,7 +28,7 @@ AFCharacter::AFCharacter()
 
 	// assign capsule collision type to player and weapon collision response to ignore
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel1);
+	GetCapsuleComponent()->SetCollisionObjectType(COLLISION_PLAYER);
 
 	SprintSpeed = 550.0f;
 	bIsFiring = false;
@@ -101,15 +102,12 @@ void AFCharacter::StopSprint()
 
 void AFCharacter::StartFire()
 {
-	if (!bIsFiring)
+	if (!bIsFiring && !bInBuildMode)
 	{
-		if (EquippedWeapon)
+		if (EquippedWeapon && EquippedWeapon->StartFire())
 		{
-			if (EquippedWeapon->StartFire())
-			{
-				bIsFiring = true;
-				StopSprint();
-			}
+			bIsFiring = true;
+			StopSprint();
 		}
 	}
 }
@@ -160,35 +158,26 @@ void AFCharacter::UseAbilityB()
 
 void AFCharacter::GetTurretPlacement()
 {
-	FHitResult HitA, HitB;
+	FHitResult HitA;
 	FVector TraceStart = CameraComp->GetComponentLocation();
 	FVector TraceEnd = TraceStart + (CameraComp->GetForwardVector() * 3000.0f);
 	FCollisionQueryParams QueryParams;
 
 	if (GetWorld()->LineTraceSingleByChannel(HitA, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 	{
-		if (HitA.GetActor() && HitA.GetActor()->IsA(TurretBaseClass))
+		if (HitA.GetActor() && HitA.GetActor()->IsA(AFTowerBase::StaticClass()))
 		{
-			TurretPlacement = HitA.GetActor()->GetActorLocation(); // Change GetLocation to custom on Base
+			SelectedBase = Cast<AFTowerBase>(HitA.GetActor());
+			if (SelectedBase)
+			{
+				TurretPlacement = SelectedBase->GetTurretSlot()->GetComponentLocation(); // Change GetLocation to custom on Base
+			}
+			//TODO add error log
 		}
 		else
 		{
+			SelectedBase = nullptr;
 			TurretPlacement = HitA.Location;
-		}
-
-		DrawDebugSphere(GetWorld(), TurretPlacement, 50.0f, 12, FColor::Green, false, 0.1f, 0, 0.35f);
-	}
-	else if (GetWorld()->LineTraceSingleByChannel(HitB, TraceEnd, TraceEnd + (FVector::UpVector * -3000.0f), ECC_Visibility, QueryParams))
-	{
-		// if first trace didn't hit, trace down to check for floor
-
-		if (HitB.GetActor() && HitB.GetActor()->IsA(TurretBaseClass))
-		{
-			TurretPlacement = HitB.GetActor()->GetActorLocation(); // Change GetLocation to custom on Base
-		}
-		else
-		{
-			TurretPlacement = HitB.Location;
 		}
 
 		DrawDebugSphere(GetWorld(), TurretPlacement, 50.0f, 12, FColor::Green, false, 0.1f, 0, 0.35f);
@@ -204,15 +193,18 @@ void AFCharacter::EnterBuildMode()
 	}
 	else
 	{
+		bInBuildMode = false;
 		GetWorldTimerManager().ClearTimer(TimerHandle_Turret);
 	}
 }
 
 void AFCharacter::BuildTurret()
 {
-	if (bInBuildMode)
+	if (bInBuildMode && SelectedBase)
 	{
-		// Run build turret logic
+		SelectedBase->BuildTower(TurretClass);
+		bInBuildMode = false;
+		GetWorldTimerManager().ClearTimer(TimerHandle_Turret);
 	}
 }
 
@@ -255,6 +247,17 @@ void AFCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Offensive", IE_Pressed, this, &AFCharacter::UseAbilityA);
 	PlayerInputComponent->BindAction("Support", IE_Pressed, this, &AFCharacter::UseAbilityB);
 	PlayerInputComponent->BindAction("Build", IE_Pressed, this, &AFCharacter::EnterBuildMode);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFCharacter::BuildTurret);
+}
+
+FVector AFCharacter::GetPawnViewLocation() const
+{
+	if (CameraComp)
+	{
+		return CameraComp->GetComponentLocation();
+	}
+
+	return GetActorLocation() + FVector(0.f, 0.f, BaseEyeHeight);
 }
 
 void AFCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

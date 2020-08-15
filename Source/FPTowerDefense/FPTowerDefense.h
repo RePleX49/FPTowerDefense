@@ -9,3 +9,4 @@
 #define SURFACE_FLESHWEAK		SurfaceType2
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel2
+#define COLLISION_PLAYER		ECC_GameTraceChannel1

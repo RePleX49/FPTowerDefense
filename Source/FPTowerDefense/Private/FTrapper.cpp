@@ -88,6 +88,7 @@ void AFTrapper::UseAbilityA()
 	}
 	else
 	{
+		bInPlacementMode = false;
 		GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
 	}
 }

@@ -10,6 +10,8 @@
 class UCameraComponent;
 class AFWeapon;
 class UFHealthComponent;
+class AFTowerBase;
+class AFTower;
 
 UCLASS()
 class FPTOWERDEFENSE_API AFCharacter : public ACharacter
@@ -67,7 +69,7 @@ protected:
 	TSubclassOf<AFWeapon> PrimaryWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Turrets")
-	TSubclassOf<AActor> TurretBaseClass;
+	TSubclassOf<AFTower> TurretClass;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
 	AFWeapon* EquippedWeapon;
@@ -103,12 +105,16 @@ protected:
 
 	FTimerHandle TimerHandle_Turret;
 
+	AFTowerBase* SelectedBase;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual FVector GetPawnViewLocation() const override;
 
 	USkeletalMeshComponent* GetArmMesh() const { return ArmMesh; };
 
