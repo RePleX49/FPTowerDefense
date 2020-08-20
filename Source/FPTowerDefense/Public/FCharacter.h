@@ -56,6 +56,10 @@ protected:
 
 	void BuildTurret();
 
+	UFUNCTION()
+	void OnHealthChanged(UFHealthComponent* OwningHealthComp, float Health, float HealthDelta, 
+		const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 

@@ -5,6 +5,7 @@
 #include "FHealthComponent.h"
 #include "FPTowerDefense/FPTowerDefense.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AFEnemy::AFEnemy()
@@ -20,6 +21,7 @@ void AFEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	HealthComp->OnHealthChanged.AddDynamic(this, &AFEnemy::OnHealthChanged);
 }
 
 // Called every frame
@@ -27,6 +29,19 @@ void AFEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AFEnemy::OnHealthChanged(UFHealthComponent* OwningHealthComp, float Health, float HealthDelta,
+	const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (OwningHealthComp->IsDead())
+	{
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DetachFromControllerPendingDestroy();
+		//TODO Add dissolve affect on death
+		SetLifeSpan(3.0f);
+	}
 }
 
 // Called to bind functionality to input

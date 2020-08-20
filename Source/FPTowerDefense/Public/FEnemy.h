@@ -24,6 +24,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UFHealthComponent* HealthComp;
 
+	UFUNCTION()
+	void OnHealthChanged(UFHealthComponent* OwningHealthComp, float Health, float HealthDelta,
+		const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

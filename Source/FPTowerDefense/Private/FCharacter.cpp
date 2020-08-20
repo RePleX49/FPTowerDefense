@@ -59,6 +59,8 @@ void AFCharacter::BeginPlay()
 		}
 	}
 
+	HealthComp->OnHealthChanged.AddDynamic(this, &AFCharacter::OnHealthChanged);
+
 	Cooldown_Support = CooldownTime_Support;
 	Cooldown_Offensive = CooldownTime_Offensive;
 }
@@ -205,6 +207,17 @@ void AFCharacter::BuildTurret()
 		SelectedBase->BuildTower(TurretClass);
 		bInBuildMode = false;
 		GetWorldTimerManager().ClearTimer(TimerHandle_Turret);
+	}
+}
+
+void AFCharacter::OnHealthChanged(UFHealthComponent* OwningHealthComp, float Health, float HealthDelta,
+	const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (OwningHealthComp->IsDead())
+	{
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DetachFromControllerPendingDestroy();
 	}
 }
 
