@@ -30,6 +30,9 @@ protected:
 
 	virtual void Fire();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	virtual void ServerFire();
+
 	// function that actually calls Traces
 	virtual void HandleFiring();
 
@@ -102,4 +105,5 @@ protected:
 
 public:	
 
+	USkeletalMeshComponent* GetWeaponMesh() const{ return MeshComp; };
 };

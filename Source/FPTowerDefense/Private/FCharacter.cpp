@@ -24,11 +24,18 @@ AFCharacter::AFCharacter()
 	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arm Mesh"));
 	ArmMesh->SetupAttachment(CameraComp);
 
+
+
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("HealthComp"));
 
 	// assign capsule collision type to player and weapon collision response to ignore
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionObjectType(COLLISION_PLAYER);
+
+	// set default values for CharacterMovement
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
+	GetCharacterMovement()->AirControl = 0.15f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 450.0f;
 
 	SprintSpeed = 550.0f;
 	bIsFiring = false;
@@ -56,7 +63,13 @@ void AFCharacter::BeginPlay()
 		{
 			EquippedWeapon->SetOwner(this);
 			EquippedWeapon->AttachToComponent(ArmMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
+
+			ThirdPersonWeapon = EquippedWeapon->GetWeaponMesh();
+			ThirdPersonWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
+			ThirdPersonWeapon->SetOwnerNoSee(true);
 		}
+
+		
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &AFCharacter::OnHealthChanged);
@@ -140,6 +153,11 @@ void AFCharacter::Reload()
 
 void AFCharacter::UseAbilityA()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerAbilityA();
+	}
+
 	if (Cooldown_Offensive == CooldownTime_Offensive)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Used Offensive Ability"));
@@ -148,14 +166,39 @@ void AFCharacter::UseAbilityA()
 	}
 }
 
+void AFCharacter::ServerAbilityA_Implementation()
+{
+	UseAbilityA();
+}
+
+bool AFCharacter::ServerAbilityA_Validate()
+{
+	return true;
+}
+
 void AFCharacter::UseAbilityB()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerAbilityB();
+	}
+
 	if (Cooldown_Support == CooldownTime_Support)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Used Support Ability"));
 		Cooldown_Support = 0.0f;
 		UseSupportBP();
 	}
+}
+
+void AFCharacter::ServerAbilityB_Implementation()
+{
+	UseAbilityB();
+}
+
+bool AFCharacter::ServerAbilityB_Validate()
+{
+	return true;
 }
 
 void AFCharacter::GetTurretPlacement()

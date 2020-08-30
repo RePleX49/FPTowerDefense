@@ -24,6 +24,10 @@ public:
 
 	void EndFire();
 
+	// Used to setup PlayerUI when spawning character through BP
+	/*UFUNCTION(BlueprintNativeEvent, Category = "UI")
+	void SetupUI();*/
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,7 +46,13 @@ protected:
 
 	virtual void UseAbilityA();
 
+	UFUNCTION(Server, Reliable,WithValidation)
+	void ServerAbilityA();
+
 	virtual void UseAbilityB();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAbilityB();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
 	void UseSupportBP();
@@ -68,6 +78,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UFHealthComponent* HealthComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* ThirdPersonWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<AFWeapon> PrimaryWeapon;

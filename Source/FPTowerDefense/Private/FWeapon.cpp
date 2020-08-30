@@ -126,6 +126,11 @@ bool AFWeapon::StartReload()
 
 void AFWeapon::Fire()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerFire();
+	}
+
 	if (CurrentMagCount > 0)
 	{	
 		// HandleFiring runs actual firing logic
@@ -136,6 +141,17 @@ void AFWeapon::Fire()
 	{
 		EndFire();	
 	}
+}
+
+void AFWeapon::ServerFire_Implementation()
+{
+	Fire();
+}
+
+bool AFWeapon::ServerFire_Validate()
+{
+	// place to implement cheat detection
+	return true;
 }
 
 void AFWeapon::HandleFiring()

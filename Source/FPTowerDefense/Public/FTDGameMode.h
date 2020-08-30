@@ -12,7 +12,5 @@
 UCLASS()
 class FPTOWERDEFENSE_API AFTDGameMode : public AGameModeBase
 {
-	GENERATED_UCLASS_BODY()
-
-	virtual UClass* GetDefaultPawnClassForController(AController* InController) override;
+	GENERATED_BODY()
 };
