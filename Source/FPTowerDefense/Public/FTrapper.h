@@ -26,9 +26,14 @@ protected:
 
 	void PlaceTrap();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerPlaceTrap();
+
 	virtual void UseAbilityA() override;
 
-	virtual void UseAbilityB() override;
+	virtual void AbilityA() override;
+
+	virtual void AbilityB() override;
 
 	FTimerHandle TimerHandle_PlaceTrap;
 
@@ -44,6 +49,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<AActor> TetherClass;
 
+	UPROPERTY(Replicated)
 	FVector TrapPlacement;
 
 	// used in tick

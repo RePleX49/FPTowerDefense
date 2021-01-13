@@ -46,10 +46,14 @@ protected:
 
 	virtual void UseAbilityA();
 
+	virtual void AbilityA();
+
 	UFUNCTION(Server, Reliable,WithValidation)
 	void ServerAbilityA();
 
 	virtual void UseAbilityB();
+
+	virtual void AbilityB();
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerAbilityB();

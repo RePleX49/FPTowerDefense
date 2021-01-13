@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 AFTrapper::AFTrapper()
 {
@@ -57,6 +58,11 @@ void AFTrapper::GetPlaceSpot()
 
 void AFTrapper::PlaceTrap()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerPlaceTrap();
+	}
+
 	if (bInPlacementMode)
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_PlaceTrap);
@@ -79,8 +85,21 @@ void AFTrapper::PlaceTrap()
 	}
 }
 
+void AFTrapper::ServerPlaceTrap_Implementation()
+{
+	PlaceTrap();
+}
+
+bool AFTrapper::ServerPlaceTrap_Validate()
+{
+	// cheat detection goes here
+	return true;
+}
+
 void AFTrapper::UseAbilityA()
 {
+	// Super::UseAbilityA();
+
 	if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PlaceTrap))
 	{
 		bInPlacementMode = true;
@@ -93,7 +112,12 @@ void AFTrapper::UseAbilityA()
 	}
 }
 
-void AFTrapper::UseAbilityB()
+void AFTrapper::AbilityA()
+{
+	// TODO restructure code so that setting the Placement timer works here
+}
+
+void AFTrapper::AbilityB()
 {
 	// throw tether projectile
 	if (TetherClass)
@@ -112,7 +136,6 @@ void AFTrapper::UseAbilityB()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not find tether class"));
 	}
-	
 }
 
 void AFTrapper::Tick(float DeltaTime)
@@ -185,4 +208,11 @@ void AFTrapper::RemoveOutline(AActor* OutlinedActor)
 		UStaticMeshComponent* PrimComp = Cast<UStaticMeshComponent>(ActorComp);
 		PrimComp->SetRenderCustomDepth(false);
 	}
+}
+
+void AFTrapper::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFTrapper, TrapPlacement);
 }

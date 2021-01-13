@@ -4,12 +4,15 @@
 #include "FHealthComponent.h"
 #include "FEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UFHealthComponent::UFHealthComponent()
 {
 	MaxHealth = 100.0f;
 	MaxShield = 100.0f;
+
+	SetIsReplicated(true);
 }
 
 void UFHealthComponent::Heal(float HealAmount)
@@ -32,7 +35,11 @@ void UFHealthComponent::BeginPlay()
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
 	{
-		MyOwner->OnTakeAnyDamage.AddDynamic(this, &UFHealthComponent::HandleTakeAnyDamage);
+		// only hook up if we are the server
+		if (GetOwnerRole() == ROLE_Authority)
+		{
+			MyOwner->OnTakeAnyDamage.AddDynamic(this, &UFHealthComponent::HandleTakeAnyDamage);
+		}
 
 		AFEnemy* MyCharacter = Cast<AFEnemy>(MyOwner);
 		if (MyCharacter)
@@ -112,4 +119,13 @@ void UFHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 	UE_LOG(LogTemp, Log, TEXT("%s Health: %s"), *GetOwner()->GetName(), *FString::SanitizeFloat(CurrentHealth));
 
 	OnHealthChanged.Broadcast(this, CurrentHealth, Damage, DamageType, InstigatedBy, DamageCauser);
+}
+
+void UFHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UFHealthComponent, CurrentHealth);
+	DOREPLIFETIME(UFHealthComponent, CurrentShield);
+	DOREPLIFETIME(UFHealthComponent, bIsDead);
 }

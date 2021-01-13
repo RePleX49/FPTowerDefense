@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "FPTowerDefense/FPTowerDefense.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Net/UnrealNetwork.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -46,28 +47,43 @@ void AFWeapon_HitScan::FireShot()
 			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(),
 				MyOwner, DamageType);
 
-			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-
-			UParticleSystem* SelectedEffect = nullptr;
-			switch (SurfaceType)
-			{
-			case SURFACE_FLESHDEFAULT:
-			case SURFACE_FLESHWEAK:
-				SelectedEffect = FleshImpactEffect;
-				break;
-
-			default:
-				SelectedEffect = DefaultImpactEffect;
-				break;
-			}
-
-			if (SelectedEffect)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-			}
+			HitScanTrace.SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			HitScanTrace.HitLocation = Hit.ImpactPoint;
 		}
 
 		CurrentMagCount--;
 	}
 }
 
+void AFWeapon_HitScan::OnRep_ImpactParticle()
+{
+	PlayImpactFX();
+}
+
+void AFWeapon_HitScan::PlayImpactFX()
+{
+	UParticleSystem* SelectedEffect = nullptr;
+	switch (HitScanTrace.SurfaceType)
+	{
+	case SURFACE_FLESHDEFAULT:
+	case SURFACE_FLESHWEAK:
+		SelectedEffect = FleshImpactEffect;
+		break;
+
+	default:
+		SelectedEffect = DefaultImpactEffect;
+		break;
+	}
+
+	if (SelectedEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, HitScanTrace.HitLocation, HitScanTrace.HitLocation.Rotation());
+	}
+}
+
+void AFWeapon_HitScan::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFWeapon_HitScan, HitScanTrace);
+}

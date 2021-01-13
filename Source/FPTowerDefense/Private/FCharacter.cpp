@@ -24,8 +24,6 @@ AFCharacter::AFCharacter()
 	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arm Mesh"));
 	ArmMesh->SetupAttachment(CameraComp);
 
-
-
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("HealthComp"));
 
 	// assign capsule collision type to player and weapon collision response to ignore
@@ -45,6 +43,8 @@ AFCharacter::AFCharacter()
 	CooldownTime_Support = 4.0f;
 
 	WeaponAttachSocketName = "AttachSocket";
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -64,12 +64,10 @@ void AFCharacter::BeginPlay()
 			EquippedWeapon->SetOwner(this);
 			EquippedWeapon->AttachToComponent(ArmMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
 
-			ThirdPersonWeapon = EquippedWeapon->GetWeaponMesh();
+			/*ThirdPersonWeapon = EquippedWeapon->GetWeaponMesh();
 			ThirdPersonWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
-			ThirdPersonWeapon->SetOwnerNoSee(true);
+			ThirdPersonWeapon->SetOwnerNoSee(true);*/
 		}
-
-		
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &AFCharacter::OnHealthChanged);
@@ -142,12 +140,9 @@ void AFCharacter::EndFire()
 
 void AFCharacter::Reload()
 {
-	if (EquippedWeapon)
+	if (EquippedWeapon && EquippedWeapon->StartReload())
 	{
-		if (EquippedWeapon->StartReload())
-		{
-			EndFire();
-		}	
+		EndFire();
 	}
 }
 
@@ -160,10 +155,20 @@ void AFCharacter::UseAbilityA()
 
 	if (Cooldown_Offensive == CooldownTime_Offensive)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Used Offensive Ability"));
 		Cooldown_Offensive = 0.0f;
+
+		// actual ability logic in AbilityA function
+		AbilityA();
+
+		// Blueprint Event call for prototyping
 		UseOffensiveBP();
 	}
+}
+
+void AFCharacter::AbilityA()
+{
+	// PUT ABILITY LOGIC HERE
+	UE_LOG(LogTemp, Warning, TEXT("Used Ability A"));
 }
 
 void AFCharacter::ServerAbilityA_Implementation()
@@ -173,6 +178,7 @@ void AFCharacter::ServerAbilityA_Implementation()
 
 bool AFCharacter::ServerAbilityA_Validate()
 {
+	// Cheat detection goes here
 	return true;
 }
 
@@ -185,10 +191,20 @@ void AFCharacter::UseAbilityB()
 
 	if (Cooldown_Support == CooldownTime_Support)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Used Support Ability"));
 		Cooldown_Support = 0.0f;
+		
+		// actual ability logic in AbilityB function
+		AbilityB();
+
+		// Blueprint Event call for prototyping
 		UseSupportBP();
 	}
+}
+
+void AFCharacter::AbilityB()
+{
+	// PUT ABILITY LOGIC HERE
+	UE_LOG(LogTemp, Warning, TEXT("Used Ability B"));
 }
 
 void AFCharacter::ServerAbilityB_Implementation()
@@ -198,6 +214,7 @@ void AFCharacter::ServerAbilityB_Implementation()
 
 bool AFCharacter::ServerAbilityB_Validate()
 {
+	// Cheat detection goes here
 	return true;
 }
 
@@ -215,7 +232,7 @@ void AFCharacter::GetTurretPlacement()
 			SelectedBase = Cast<AFTowerBase>(HitA.GetActor());
 			if (SelectedBase)
 			{
-				TurretPlacement = SelectedBase->GetTurretSlot()->GetComponentLocation(); // Change GetLocation to custom on Base
+				TurretPlacement = SelectedBase->GetTurretSlot()->GetComponentLocation(); // Change GetLocation to custom location on Base
 			}
 			//TODO add error log
 		}
@@ -313,6 +330,7 @@ FVector AFCharacter::GetPawnViewLocation() const
 		return CameraComp->GetComponentLocation();
 	}
 
+	// default to BaseEyeHeight if no CameraComp is found
 	return GetActorLocation() + FVector(0.f, 0.f, BaseEyeHeight);
 }
 

@@ -18,7 +18,7 @@ void AFBurstRifle::HandleFiring()
 {
 	Super::HandleFiring();
 
-	// Check which Burst shot we are on 
+	// Check which Burst shot we are on and if we still have ammo in the magazine
 	if (CurrentBurst < BurstCount && CurrentMagCount > 0)
 	{
 		float FirstBurstDelay = FMath::Max(TimeBetweenBurst + LastBurstTime - GetWorld()->TimeSeconds, 0.0f);
@@ -34,6 +34,7 @@ void AFBurstRifle::FireShot()
 {
 	Super::FireShot();
 
+	// NOTE: setting last BURST time, NOT last SHOT time
 	LastBurstTime = GetWorld()->TimeSeconds;
 	CurrentBurst++;
 	HandleFiring();

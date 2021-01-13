@@ -31,7 +31,10 @@ protected:
 	virtual void Fire();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	virtual void ServerFire();
+	void ServerFire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerReload();
 
 	// function that actually calls Traces
 	virtual void HandleFiring();

@@ -33,10 +33,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "HealthComponent")
 	TSubclassOf<UDamageType> SlowDamage;
 
-	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
 	float CurrentHealth;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
 	float CurrentShield;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HealthComponent")
@@ -47,7 +47,7 @@ protected:
 
 	float DefaultMoveSpeed;
 
-	UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
 	bool bIsDead;
 
 	FTimerHandle TimerHandle_ResetSlow;

@@ -88,6 +88,11 @@ void AFWeapon::EndFire()
 
 bool AFWeapon::StartReload()
 {
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerReload();
+	}
+
 	if (CurrentMagCount < MaxMagCount && !bIsReloading)
 	{
 		EndFire();
@@ -133,7 +138,7 @@ void AFWeapon::Fire()
 
 	if (CurrentMagCount > 0)
 	{	
-		// HandleFiring runs actual firing logic
+		// overrideable function called to handle firing logic
 		HandleFiring();
 		LastFireTime = GetWorld()->TimeSeconds;
 	}
@@ -151,6 +156,17 @@ void AFWeapon::ServerFire_Implementation()
 bool AFWeapon::ServerFire_Validate()
 {
 	// place to implement cheat detection
+	return true;
+}
+
+void AFWeapon::ServerReload_Implementation()
+{
+	StartReload();
+}
+
+bool AFWeapon::ServerReload_Validate()
+{
+	// would handle cheat detection here
 	return true;
 }
 
