@@ -15,6 +15,11 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 	TEXT("Draw Debug Lines for Weapons"), 
 	ECVF_Cheat);
 
+AFWeapon_HitScan::AFWeapon_HitScan()
+{
+	DamageMultiplier = 3.0f;
+}
+
 void AFWeapon_HitScan::FireShot()
 {
 	AActor* MyOwner = GetOwner();
@@ -44,11 +49,17 @@ void AFWeapon_HitScan::FireShot()
 		{
 			AActor* HitActor = Hit.GetActor();
 
-			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(),
-				MyOwner, DamageType);
-
 			HitScanTrace.SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 			HitScanTrace.HitLocation = Hit.ImpactPoint;
+			float WeakspotMult = 1.0f;
+
+			if (HitScanTrace.SurfaceType == SURFACE_FLESHWEAK)
+			{
+				WeakspotMult = DamageMultiplier;
+			}
+
+			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage * WeakspotMult, ShotDirection, Hit, MyOwner->GetInstigatorController(),
+				MyOwner, DamageType);			
 		}
 
 		CurrentMagCount--;

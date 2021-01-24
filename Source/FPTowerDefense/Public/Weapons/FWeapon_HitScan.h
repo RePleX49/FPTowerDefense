@@ -26,6 +26,9 @@ UCLASS()
 class FPTOWERDEFENSE_API AFWeapon_HitScan : public AFWeapon
 {
 	GENERATED_BODY()
+
+public:
+	AFWeapon_HitScan();
 	
 protected:
 
@@ -41,4 +44,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_ImpactParticle();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float DamageMultiplier;
 };

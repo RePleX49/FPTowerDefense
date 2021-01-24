@@ -10,6 +10,7 @@
 class UCameraComponent;
 class AFWeapon;
 class UFHealthComponent;
+class UFAbility;
 class AFTowerBase;
 class AFTower;
 
@@ -43,6 +44,8 @@ protected:
 	virtual void StartFire();
 
 	void Reload();
+
+	void TestAbility();
 
 	virtual void UseAbilityA();
 
@@ -82,6 +85,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UFHealthComponent* HealthComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UFAbility* AbilityComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* ThirdPersonWeapon;

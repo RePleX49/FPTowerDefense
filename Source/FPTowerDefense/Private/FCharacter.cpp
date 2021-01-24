@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "FWeapon.h"
+#include "FAbility.h"
 #include "FHealthComponent.h"
 #include "FPTowerDefense/FPTowerDefense.h"
 #include "Net/UnrealNetwork.h"
@@ -25,6 +26,7 @@ AFCharacter::AFCharacter()
 	ArmMesh->SetupAttachment(CameraComp);
 
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("HealthComp"));
+	AbilityComp = CreateDefaultSubobject<UFAbility>(TEXT("AbilityComp"));
 
 	// assign capsule collision type to player and weapon collision response to ignore
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
@@ -143,6 +145,14 @@ void AFCharacter::Reload()
 	if (EquippedWeapon && EquippedWeapon->StartReload())
 	{
 		EndFire();
+	}
+}
+
+void AFCharacter::TestAbility()
+{
+	if (AbilityComp)
+	{
+		AbilityComp->ActivateAbility();
 	}
 }
 
@@ -321,6 +331,7 @@ void AFCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Support", IE_Pressed, this, &AFCharacter::UseAbilityB);
 	PlayerInputComponent->BindAction("Build", IE_Pressed, this, &AFCharacter::EnterBuildMode);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFCharacter::BuildTurret);
+	PlayerInputComponent->BindAction("TestAbility", IE_Pressed, this, &AFCharacter::TestAbility);
 }
 
 FVector AFCharacter::GetPawnViewLocation() const
