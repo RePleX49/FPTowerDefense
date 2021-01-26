@@ -19,21 +19,24 @@ public:
 	// Sets default values for this component's properties
 	UFAbility();
 
-	void ActivateAbility();
+	void TryAbility();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintGetter=GetAbility, BlueprintReadOnly, VisibleAnywhere)
 	UObjectTest* MyAbility;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TSubclassOf<UObjectTest> SpawnClass;
 
+	void ActivateAbility();
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	
+	UFUNCTION(BlueprintGetter)
+	UObjectTest* GetAbility() { return MyAbility; };
 };

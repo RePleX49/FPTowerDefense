@@ -20,6 +20,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void UseAbilityBP();
 
+	void UpdateCooldown(float UpdateVal);
+
+	bool IsAbilityReady();
+
 	virtual UWorld* GetWorld() const override 
 	{
 		if (const UObject* MyOuter = GetOuter())
@@ -35,7 +39,19 @@ public:
 		return GetTypedOuter<UActorComponent>();
 	}
 
+	UFUNCTION(BlueprintGetter)
+	float GetCooldownDuration();
+	
+	UFUNCTION(BlueprintGetter)
+	float GetCurrentCooldown();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
-		TSubclassOf<AActor> SpawnClass;
+	TSubclassOf<AActor> SpawnClass;
+
+	UPROPERTY(BlueprintGetter=GetCooldownDuration, EditDefaultsOnly, Category = "Properties")
+	float CooldownDuration;
+
+	UPROPERTY(BlueprintGetter=GetCurrentCooldown)
+	float CurrentCooldown;
 };

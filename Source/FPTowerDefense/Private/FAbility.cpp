@@ -15,6 +15,13 @@ UFAbility::UFAbility()
 	// ...
 }
 
+void UFAbility::TryAbility()
+{
+	if (MyAbility && MyAbility->IsAbilityReady())
+	{
+		ActivateAbility();
+	}
+}
 
 void UFAbility::ActivateAbility()
 {
@@ -40,6 +47,12 @@ void UFAbility::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	if (MyAbility)
+	{
+		if (!MyAbility->IsAbilityReady())
+		{
+			MyAbility->UpdateCooldown(DeltaTime);
+		}
+	}
 }
 

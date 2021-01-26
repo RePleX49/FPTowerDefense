@@ -152,7 +152,7 @@ void AFCharacter::TestAbility()
 {
 	if (AbilityComp)
 	{
-		AbilityComp->ActivateAbility();
+		AbilityComp->TryAbility();
 	}
 }
 
