@@ -38,7 +38,11 @@ void UFAbility::BeginPlay()
 
 	// ...
 	FActorSpawnParameters SpawnParams;
-	MyAbility = NewObject<UObjectTest>(this, SpawnClass);
+
+	if (SpawnClass)
+	{
+		MyAbility = NewObject<UObjectTest>(this, SpawnClass);
+	}	
 }
 
 

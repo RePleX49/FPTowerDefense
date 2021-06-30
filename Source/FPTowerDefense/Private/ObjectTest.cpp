@@ -26,12 +26,7 @@ void UObjectTest::UpdateCooldown(float UpdateVal)
 
 bool UObjectTest::IsAbilityReady()
 {
-	if (CurrentCooldown >= CooldownDuration)
-	{
-		return true;
-	}
-
-	return false;
+	return (CurrentCooldown >= CooldownDuration);
 }
 
 float UObjectTest::GetCooldownDuration()
