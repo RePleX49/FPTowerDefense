@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "FTDGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class FPTOWERDEFENSE_API AFTDGameMode : public AGameModeBase
 {
@@ -22,12 +19,13 @@ public:
     UFUNCTION(BlueprintCallable)
     void PlayerReadyUp();
 
-    UFUNCTION(Server, Reliable)
-    void ServerReadyUp();
+    UFUNCTION(BlueprintCallable)
+    void PlayerUnready();
 
 protected:
     int readyPlayers;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Properties")
     int numOfEnemies;
 
     FTimerHandle TimerHandle_SpawnEnemies;
@@ -36,8 +34,14 @@ protected:
 
     void EndWave();
 
+    void UpdateReadyPlayerCount();
+
     void SpawnEnemiesTimer();
 
     UFUNCTION(BlueprintImplementableEvent)
     void SpawnEnemies();
+
+    virtual void PostLogin(APlayerController* NewPlayer) override;
+
+    virtual void Logout(AController* Exiting) override;
 };

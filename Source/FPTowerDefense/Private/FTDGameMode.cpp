@@ -2,6 +2,7 @@
 
 
 #include "FTDGameMode.h"
+#include "FTDGameState.h"
 
 AFTDGameMode::AFTDGameMode()
 {
@@ -15,23 +16,28 @@ void AFTDGameMode::StartPlay()
 
 void AFTDGameMode::PlayerReadyUp()
 {
-	if (GetLocalRole() < ROLE_Authority)
-	{
-		ServerReadyUp();
-	}
-
+	// todo confirm that player is not already ready to increment
 	readyPlayers++;
+
+	UpdateReadyPlayerCount();
 
 	if (readyPlayers == GetNumPlayers())
 	{
 		// call to start the wave
+		AFTDGameState* MyGameState = Cast<AFTDGameState>(GameState);
+		if (MyGameState)
+		{
+			MyGameState->isMatchReady = true;
+			MyGameState->OnRep_MatchReady();
+		}
 		StartWave();
 	}
 }
 
-void AFTDGameMode::ServerReadyUp_Implementation()
+void AFTDGameMode::PlayerUnready()
 {
-	PlayerReadyUp();
+	readyPlayers--;
+	UpdateReadyPlayerCount();
 }
 
 void AFTDGameMode::SpawnEnemiesTimer()
@@ -46,12 +52,43 @@ void AFTDGameMode::SpawnEnemiesTimer()
 	}
 }
 
+void AFTDGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	AFTDGameState* MyGameState = Cast<AFTDGameState>(GameState);
+	if (MyGameState)
+	{
+		MyGameState->PlayersInMatch++;
+	}
+}
+
+void AFTDGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	AFTDGameState* MyGameState = Cast<AFTDGameState>(GameState);
+	if (MyGameState)
+	{
+		MyGameState->PlayersInMatch--;
+	}
+}
+
 void AFTDGameMode::StartWave()
 {
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnEnemies, this, &AFTDGameMode::SpawnEnemiesTimer, 1.0f, true, 0.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnEnemies, this, &AFTDGameMode::SpawnEnemiesTimer, 0.5f, true, 0.0f);
 }
 
 void AFTDGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_SpawnEnemies);
+}
+
+void AFTDGameMode::UpdateReadyPlayerCount()
+{
+	AFTDGameState* MyGameState = Cast<AFTDGameState>(GameState);
+	if (MyGameState)
+	{
+		MyGameState->NumPlayersReady = readyPlayers;
+	}
 }
