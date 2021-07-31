@@ -25,6 +25,8 @@ AFCharacter::AFCharacter()
 	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arm Mesh"));
 	ArmMesh->SetupAttachment(CameraComp);
 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
 	HealthComp = CreateDefaultSubobject<UFHealthComponent>(TEXT("HealthComp"));
 	AbilityComp = CreateDefaultSubobject<UFAbility>(TEXT("AbilityComp"));
 
